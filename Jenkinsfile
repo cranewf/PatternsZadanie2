@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Клонируем репозиторий с GitHub
-                git branch: 'main', url: 'https://github.com/your-repo-url'
+                git branch: 'main', url: 'https://github.com/cranewf/PatternsZadanie2'
             }
         }
 
