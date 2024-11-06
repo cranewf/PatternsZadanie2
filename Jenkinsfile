@@ -1,43 +1,43 @@
 pipeline {
-    agent any
-
-    environment {
-        JAVA_HOME = tool name: 'jdk17', type: 'JDK'
+    agent {
+        label 'ubuntu' // Укажите метку агента, если Jenkins настроен на использование конкретных агентов
     }
-
+    tools {
+        jdk 'jdk17' // Убедитесь, что JDK 17 настроен в Global Tool Configuration как 'jdk17'
+    }
+    environment {
+        PROFILE = 'test'
+    }
     stages {
         stage('Checkout') {
             steps {
-                // Клонируем репозиторий с GitHub
-                git branch: 'main', url: 'https://github.com/cranewf/PatternsZadanie2'
+                checkout scm
             }
         }
-
-        stage('Install Dependencies') {
+        stage('Install and Start Application') {
             steps {
                 script {
-                    // Запускаем jar файл с нужным профилем
-                    sh 'java -jar ./artifacts/app-ibank.jar -P:profile=test &'
+                    // Запускаем приложение
+                    sh 'nohup java -jar ./artifacts/app-ibank.jar -P:profile=${PROFILE} &'
                     // Даем права на выполнение gradlew
                     sh 'chmod +x gradlew'
                 }
             }
         }
-
         stage('Run Tests') {
             steps {
-                script {
-                    // Запускаем тесты с параметрами
-                    sh './gradlew test --info -Dselenide.headless=true'
-                }
+                // Выполнение тестов с параметром для headless-режима
+                sh './gradlew test --info -Dselenide.headless=true'
             }
         }
     }
-
     post {
         always {
-            // Этот блок выполняется всегда (например, для уведомлений)
-            echo 'Cleanup or notifications can be placed here.'
+            echo 'Pipeline completed'
+        }
+        cleanup {
+            // Любые необходимые команды для завершения, например, завершение приложения
+            sh 'pkill -f app-ibank.jar' // Пример для завершения приложения
         }
     }
 }
