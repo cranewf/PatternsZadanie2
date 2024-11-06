@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'ubuntu' // Укажите метку агента, если Jenkins настроен на использование конкретных агентов
-    }
+    agent any
     tools {
         jdk 'jdk17' // Убедитесь, что JDK 17 настроен в Global Tool Configuration как 'jdk17'
     }
